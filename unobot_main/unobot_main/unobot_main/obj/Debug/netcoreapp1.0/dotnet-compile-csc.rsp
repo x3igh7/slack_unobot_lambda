@@ -97,4 +97,7 @@
 -r:"C:\Users\conne\.nuget\packages\System.Xml.ReaderWriter\4.0.11\ref\netstandard1.3\System.Xml.ReaderWriter.dll"
 -r:"C:\Users\conne\.nuget\packages\System.Xml.XDocument\4.0.11\ref\netstandard1.3\System.Xml.XDocument.dll"
 "C:\Users\conne\Code\unotbot\unobot_main\unobot_main\unobot_main\Main.cs"
+"C:\Users\conne\Code\unotbot\unobot_main\unobot_main\unobot_main\Models\Card.cs"
+"C:\Users\conne\Code\unotbot\unobot_main\unobot_main\unobot_main\Models\Deck.cs"
+"C:\Users\conne\Code\unotbot\unobot_main\unobot_main\unobot_main\Models\Enums\Color.cs"
 "C:\Users\conne\Code\unotbot\unobot_main\unobot_main\unobot_main\Properties\AssemblyInfo.cs"
