@@ -27,8 +27,5 @@ namespace unobot_main.SlackApi
 
         [JsonProperty("text")]
         public string Text { get; set; }
-
-        [JsonProperty("response_url")]
-        public string ResponseUrl { get; set; }
     }
 }

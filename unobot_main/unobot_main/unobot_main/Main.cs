@@ -17,6 +17,7 @@ namespace unobot_main
     {
         private string _body;
         private string _userName = "UnoBot";
+        private string _incomingWebHookUrl = "localhost";
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -47,7 +48,6 @@ namespace unobot_main
                 UserId = order["user_id"],
                 Username = order["user_name"],
                 Text = order["text"],
-                ResponseUrl = order["response_url"],
                 Timestamp = order["timestamp"],
                 TriggerWord = order["trigger_word"]
             };
@@ -75,8 +75,7 @@ namespace unobot_main
                     break;
 
                 case "create":
-                    await CreateDeck(order);
-                    response.Body = "One second...";
+                    response.Body = await CreateDeck(order);
                     break;
 
             }
@@ -84,7 +83,7 @@ namespace unobot_main
             return response;
         }
 
-        public async Task CreateDeck(OutgoingWebookMessage message)
+        public async Task<string> CreateDeck(OutgoingWebookMessage message)
         {
 
             var deck = new Deck();
@@ -96,9 +95,18 @@ namespace unobot_main
                 Text = JsonConvert.SerializeObject(deck.Cards)
             };
 
-            using (var client = new HttpClient())
+            if (!message.TriggerWord.Equals("debug"))
             {
-                await client.PostAsync(message.ResponseUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+                using (var client = new HttpClient())
+                {
+                    await client.PostAsync(_incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+                }
+
+                return "working on it..";
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(payload);
             }
         }
 
