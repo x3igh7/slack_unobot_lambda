@@ -25,9 +25,6 @@ namespace unobot_main.SlackApi
         [JsonProperty("username")]
         public string Username { get; set; }
 
-        [JsonProperty("command")]
-        public string Command { get; set; }
-
         [JsonProperty("text")]
         public string Text { get; set; }
 

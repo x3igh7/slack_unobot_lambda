@@ -16,6 +16,7 @@ namespace unobot_main
     public class Main
     {
         private string _body;
+        private string _userName = "UnoBot";
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -26,15 +27,17 @@ namespace unobot_main
         {
             var message = MapToSlackMessage(input.Body);
 
+            var response = await Delagator(message);
+
             return response;
         }
 
-        public SlackMessage MapToSlackMessage(string body)
+        public OutgoingWebookMessage MapToSlackMessage(string body)
         {
             _body = body;
             var order = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(_body);
 
-            var slackMessage = new SlackMessage
+            var slackMessage = new OutgoingWebookMessage
             {
                 Token = order["token"],
                 TeamId = order["team_id"],
@@ -44,13 +47,15 @@ namespace unobot_main
                 UserId = order["user_id"],
                 Username = order["user_name"],
                 Text = order["text"],
-                ResponseUrl = order["response_url"]
+                ResponseUrl = order["response_url"],
+                Timestamp = order["timestamp"],
+                TriggerWord = order["trigger_word"]
             };
 
             return slackMessage;
         }
 
-        private async Task<APIGatewayProxyResponse> Delagator(SlackMessage order)
+        private async Task<APIGatewayProxyResponse> Delagator(OutgoingWebookMessage order)
         {
 
             var response = new APIGatewayProxyResponse
@@ -59,14 +64,19 @@ namespace unobot_main
                 Body = "An error occured and I don't know what to do with myself"
             };
 
-            var commands = order.Text.ToString().Split(' ');
+            var commands = order.Text.Split(' ');
             var command = commands[0] ?? string.Empty;
 
             switch (command)
             {
 
                 case "debug":
-                    response.Body = await CreateDebugBody(order);
+                    response.Body = CreateDebugBody(order);
+                    break;
+
+                case "create":
+                    await CreateDeck(order);
+                    response.Body = "One second...";
                     break;
 
             }
@@ -74,7 +84,7 @@ namespace unobot_main
             return response;
         }
 
-        public async Task CreateDeck(SlackMessage message)
+        public async Task CreateDeck(OutgoingWebookMessage message)
         {
 
             var deck = new Deck();
@@ -82,7 +92,7 @@ namespace unobot_main
             var payload = new Payload
             {
                 Channel = message.ChannelId,
-                Username = "UnoBot",
+                Username = _userName,
                 Text = JsonConvert.SerializeObject(deck.Cards)
             };
 
@@ -92,12 +102,12 @@ namespace unobot_main
             }
         }
 
-        private async Task<string> CreateDebugBody(SlackMessage order)
+        private string CreateDebugBody(SlackMessage order)
         {
             var payload = new Payload
             {
                 Channel = order.ChannelId,
-                Username = "Hi-Command",
+                Username = _userName,
                 Text = JsonConvert.SerializeObject(_body)
             };
 
