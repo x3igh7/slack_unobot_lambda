@@ -95,19 +95,17 @@ namespace unobot_main
                 Text = JsonConvert.SerializeObject(deck.Cards)
             };
 
-            if (!message.TriggerWord.Equals("debug"))
-            {
-                using (var client = new HttpClient())
-                {
-                    await client.PostAsync(_incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
-                }
-
-                return "working on it..";
-            }
-            else
+            if (message.TriggerWord.Equals("debug"))
             {
                 return JsonConvert.SerializeObject(payload);
             }
+
+            using (var client = new HttpClient())
+            {
+                await client.PostAsync(_incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+            }
+
+            return "working on it..";
         }
 
         private string CreateDebugBody(SlackMessage order)
