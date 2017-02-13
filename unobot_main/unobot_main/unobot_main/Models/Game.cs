@@ -10,7 +10,7 @@ namespace unobot_main.Models
         public IList<Hand> Hands { get; set; }
         public Stack<Card> Discard { get; set; }
         public int Turn { get; set; }
-        public GameStatus GameStatus { get; set; }
+        public GameStatus Status { get; set; }
 
         public void Create()
         {
@@ -22,7 +22,7 @@ namespace unobot_main.Models
             this.Hands = new List<Hand>();
             this.Discard = discard;
             this.Turn = 0;
-            this.GameStatus = GameStatus.Preparing;
+            this.Status = GameStatus.Preparing;
         }
 
         public void Load()
