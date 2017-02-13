@@ -44,6 +44,11 @@ namespace unobot_main.Models
             return hand;
         }
 
+        public Card Draw()
+        {
+            return this.Cards.Pop();
+        }
+
         private void NewCardsByColor(Color color)
         {
             var prefix = this.GetColorPrefix(color);
