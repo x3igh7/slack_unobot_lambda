@@ -11,18 +11,21 @@ namespace unobot_main.Models
         public Stack<Card> Discard { get; set; }
         public int Turn { get; set; }
         public GameStatus Status { get; set; }
+        public string CurrentValue { get; set; }
+        public Color CurrentColor { get; set; }
 
         public void Create()
         {
             var deck = this.NewDeck();
-            var discard = this.NewDiscard(deck);
 
-            this.Players = new List<Player>();
             this.Deck = deck;
+            this.Players = new List<Player>();
             this.Hands = new List<Hand>();
-            this.Discard = discard;
+            this.Discard = new Stack<Card>();
             this.Turn = 0;
             this.Status = GameStatus.Preparing;
+            this.CurrentColor = Color.Wild;
+            this.CurrentValue = string.Empty;
         }
 
         public void Load()
@@ -31,7 +34,7 @@ namespace unobot_main.Models
 
         public bool AddPlayer(Player player)
         {
-            if (this.Players.Count >= 4)
+            if (this.Players.Count == 4)
             {
                 return false;
             }
@@ -46,18 +49,28 @@ namespace unobot_main.Models
             return true;
         }
 
+        private Stack<Card> CreateDiscard(Deck deck)
+        {
+            var discard = new Stack<Card>();
+            var draw = deck.Draw();
+
+            // Draw another card if WD4
+            while (draw.Display == "WD4")
+            {
+                draw = deck.Draw();
+            }
+
+            // TODO: if W the next player chooses the color
+
+            discard.Push(draw);
+            return discard;
+        }
+
         private Deck NewDeck()
         {
             var deck = new Deck();
             deck.New();
             return deck;
-        }
-
-        private Stack<Card> NewDiscard(Deck deck)
-        {
-            var discard = new Stack<Card>();
-            discard.Push(deck.Draw());
-            return discard;
         }
     }
 }
