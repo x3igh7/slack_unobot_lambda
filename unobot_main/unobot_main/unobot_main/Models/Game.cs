@@ -11,12 +11,17 @@ namespace unobot_main.Models
 
         public bool AddPlayer(Player player)
         {
-            if (Players.Count >= 4)
+            if (this.Players.Count >= 4)
             {
                 return false;
             }
 
-            Players.Add(player);
+            this.Players.Add(player);
+            this.Hands.Add(new Hand()
+            {
+                Player = player,
+                Cards = this.Deck.DealHand()
+            });
             return true;
         }
     }
