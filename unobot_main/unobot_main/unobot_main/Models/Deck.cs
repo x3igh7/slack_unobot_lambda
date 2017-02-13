@@ -7,12 +7,12 @@ namespace unobot_main.Models
 {
     public class Deck
     {
-        public List<Card> Cards { get; set; }
+        public Stack<Card> Cards { get; set; }
 
         // Creates a new deck
         public void New()
         {
-            this.Cards = new List<Card>();
+            this.Cards = new Stack<Card>();
             this.NewCardsByColor(Color.Blue);
             this.NewCardsByColor(Color.Green);
             this.NewCardsByColor(Color.Red);
@@ -24,50 +24,82 @@ namespace unobot_main.Models
         // Loads a deck from json
         public void Load()
         {
-            
         }
 
-        public void Shuffle()
+        public void Shuffle(Random rnd = null)
         {
-            var rnd = new Random();
-            this.Cards = new List<Card>(this.Cards.OrderBy(item => rnd.Next()));
+            if (rnd == null)
+            {
+                rnd = new Random();
+            }
+            this.Cards = new Stack<Card>(this.Cards.OrderBy(item => rnd.Next()));
+        }
+
+        public List<Card> DealHand()
+        {
+            var hand = new List<Card>();
+            for (var i = 0; i < 7; i++)
+            {
+                this.Shuffle();
+                hand.Add(this.Cards.Pop());
+            }
+
+            return hand;
+        }
+
+        public Card Draw()
+        {
+            return this.Cards.Pop();
         }
 
         private void NewCardsByColor(Color color)
         {
-            var prefix = GetColorPrefix(color);
-            AddNumberedCards(color, prefix);
-            AddSpecialCards(color, prefix);
+            var prefix = this.GetColorPrefix(color);
+            this.AddNumberedCards(color, prefix);
+            this.AddSpecialCards(color, prefix);
         }
 
         private void AddNumberedCards(Color color, string prefix)
         {
-            for (var i = 0; i <= 9; i++)
-                Cards.Add(
+            this.Cards.Push(
                     new Card
                     {
                         Color = color,
-                        Value = i.ToString(),
-                        Display = $"{prefix}{i}"
+                        Value = 0.ToString(),
+                        Display = $"{prefix}{0}"
                     });
+
+            for (var j = 0; j < 2; j++)
+            {
+                for (var i = 1; i <= 9; i++)
+                {
+                    this.Cards.Push(
+                        new Card
+                        {
+                            Color = color,
+                            Value = i.ToString(),
+                            Display = $"{prefix}{i}"
+                        });
+                }
+            }
         }
 
         private void AddSpecialCards(Color color, string prefix)
         {
-            for (var i = 0; i <= 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 this.AddSpecialCard(color, prefix, "S");
                 this.AddSpecialCard(color, prefix, "D2");
                 this.AddSpecialCard(color, prefix, "R");
             }
-            
+
             this.AddSpecialCard(Color.Wild, this.GetColorPrefix(Color.Wild), string.Empty);
             this.AddSpecialCard(Color.Wild, this.GetColorPrefix(Color.Wild), "4");
         }
 
         private void AddSpecialCard(Color color, string prefix, string value)
         {
-            Cards.Add(
+            this.Cards.Push(
                 new Card
                 {
                     Color = color,
