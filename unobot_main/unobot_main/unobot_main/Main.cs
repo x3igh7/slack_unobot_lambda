@@ -26,17 +26,17 @@ namespace unobot_main
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> MainHandler(APIGatewayProxyRequest input, ILambdaContext context)
         {
-            var message = MapToSlackMessage(input.Body);
+            var message = this.MapToSlackMessage(input.Body);
 
-            var response = await Delagator(message);
+            var response = await this.Delagator(message);
 
             return response;
         }
 
         public OutgoingWebookMessage MapToSlackMessage(string body)
         {
-            _body = body;
-            var order = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(_body);
+            this._body = body;
+            var order = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(this._body);
 
             var slackMessage = new OutgoingWebookMessage
             {
@@ -71,11 +71,11 @@ namespace unobot_main
             {
 
                 case "debug":
-                    response.Body = CreateDebugBody(order);
+                    response.Body = this.CreateDebugBody(order);
                     break;
 
                 case "create":
-                    response.Body = await CreateDeck(order);
+                    response.Body = await this.CreateDeck(order);
                     break;
 
             }
@@ -91,7 +91,7 @@ namespace unobot_main
             var payload = new Payload
             {
                 Channel = message.ChannelId,
-                Username = _userName,
+                Username = this._userName,
                 Text = JsonConvert.SerializeObject(deck.Cards)
             };
 
@@ -102,7 +102,7 @@ namespace unobot_main
 
             using (var client = new HttpClient())
             {
-                await client.PostAsync(_incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+                await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
             }
 
             return "working on it..";
@@ -113,8 +113,8 @@ namespace unobot_main
             var payload = new Payload
             {
                 Channel = order.ChannelId,
-                Username = _userName,
-                Text = JsonConvert.SerializeObject(_body)
+                Username = this._userName,
+                Text = JsonConvert.SerializeObject(this._body)
             };
 
             return JsonConvert.SerializeObject(payload);
