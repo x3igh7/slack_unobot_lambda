@@ -26,9 +26,12 @@ namespace unobot_main.Models
         {
         }
 
-        public void Shuffle()
+        public void Shuffle(Random rnd = null)
         {
-            var rnd = new Random();
+            if (rnd == null)
+            {
+                rnd = new Random();
+            }
             this.Cards = new Stack<Card>(this.Cards.OrderBy(item => rnd.Next()));
         }
 
@@ -66,7 +69,7 @@ namespace unobot_main.Models
                         Display = $"{prefix}{0}"
                     });
 
-            for (int j = 0; j < 2; j++)
+            for (var j = 0; j < 2; j++)
             {
                 for (var i = 1; i <= 9; i++)
                 {
