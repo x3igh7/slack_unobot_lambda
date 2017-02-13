@@ -58,14 +58,27 @@ namespace unobot_main.Models
 
         private void AddNumberedCards(Color color, string prefix)
         {
-            for (var i = 0; i <= 9; i++)
-                this.Cards.Push(
+            this.Cards.Push(
                     new Card
                     {
                         Color = color,
-                        Value = i.ToString(),
-                        Display = $"{prefix}{i}"
+                        Value = 0.ToString(),
+                        Display = $"{prefix}{0}"
                     });
+
+            for (int j = 0; j < 2; j++)
+            {
+                for (var i = 1; i <= 9; i++)
+                {
+                    this.Cards.Push(
+                        new Card
+                        {
+                            Color = color,
+                            Value = i.ToString(),
+                            Display = $"{prefix}{i}"
+                        });
+                }
+            }
         }
 
         private void AddSpecialCards(Color color, string prefix)
