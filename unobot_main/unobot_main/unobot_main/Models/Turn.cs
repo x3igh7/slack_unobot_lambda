@@ -4,13 +4,16 @@ namespace unobot_main.Models
 {
     public class Turn
     {
-        public int PlayerCount { get; set; }
+        public Game Game { get; set; }
+        // Value reprents the index of the player who currently is taking their turn
         public int Value { get; set; }
 
-        public Turn()
+        public int PlayerCount => this.Game.Players.Count;
+
+        public Turn(Game game)
         {
+            this.Game = game;
             this.Value = 0;
-            this.PlayerCount = 1;
         }
 
         public int GetNextTurnIndex()
@@ -18,7 +21,9 @@ namespace unobot_main.Models
             int turn;
             var turnLimit = this.PlayerCount;
             var turnCalc = this.Value + 1;
-            if (turnCalc > turnLimit)
+
+            // because values are with 0 index, compare with index
+            if (turnCalc >= turnLimit)
             {
                 turn = turnCalc - turnLimit;
             }

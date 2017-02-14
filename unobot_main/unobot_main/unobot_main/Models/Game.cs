@@ -9,10 +9,15 @@ namespace unobot_main.Models
         public string CurrentValue { get; set; }
         public Deck Deck { get; set; }
         public Stack<Card> Discard { get; set; }
-        public IList<Hand> Hands { get; set; }
-        public IList<Player> Players { get; set; }
+        public List<Hand> Hands { get; set; }
+        public List<Player> Players { get; set; }
         public GameStatus Status { get; set; }
         public Turn Turn { get; set; }
+
+        public Game()
+        {
+            this.Turn = new Turn(this);
+        }
 
         public bool AddPlayer(Player player)
         {
@@ -39,7 +44,6 @@ namespace unobot_main.Models
             this.Players = new List<Player>();
             this.Hands = new List<Hand>();
             this.Discard = new Stack<Card>();
-            this.Turn = new Turn();
             this.Status = GameStatus.Preparing;
             this.CurrentColor = Color.Wild;
             this.CurrentValue = string.Empty;
@@ -49,8 +53,9 @@ namespace unobot_main.Models
         {
         }
 
-        public void Play(Card card)
+        public void Play(string input)
         {
+            var card = Card.Create(input);
             var action = new Action(this);
             action.TakeAction(card);
         }

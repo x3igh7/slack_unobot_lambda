@@ -17,7 +17,7 @@ namespace unobot_main.Tests.Models
             Assert.True(game.Discard.Count == 0);
             Assert.True(game.Hands.Count == 0);
             Assert.True(game.Players.Count == 0);
-            Assert.True(game.Turn == 0);
+            Assert.True(game.Turn.Value == 0);
             Assert.True(game.Status == GameStatus.Preparing);
             Assert.True(game.CurrentColor == Color.Wild);
             Assert.True(game.CurrentValue == string.Empty);

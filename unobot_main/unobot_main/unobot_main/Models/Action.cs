@@ -20,17 +20,28 @@ namespace unobot_main.Models
 
         public void TakeAction(Card card)
         {
-            if (!this.IsValidPlay(card))
+            var hand = this.GetHand(this.Game.Turn.Value);
+
+            if (!this.IsValidPlay(hand, card))
             {
+                // TODO: return some type of error message object to return to the user
                 return;
             }
 
             this.Game.CurrentColor = card.Color == Color.Wild ? card.NewColor : card.Color;
             this.Game.CurrentValue = card.Value;
 
-            this.HandleSpecialActions(card);
+            if (!this.HandleSpecialActions(card))
+            {
+                this.Game.Turn.ProgressTurn();
+            }
 
-            this.Game.Turn.ProgressTurn();
+            this.Game.Discard.Push(this.RemoveCardFromHand(hand, card));
+        }
+
+        private bool CardIsInHand(Hand hand, Card card)
+        {
+            return hand.Cards.Any(c => c.Display == card.Display);
         }
 
         private void Draw(int draw)
@@ -38,34 +49,44 @@ namespace unobot_main.Models
             var hand = this.GetHand(this.Game.Turn.GetNextTurnIndex());
 
             for (var i = 0; i < draw; i++)
+            {
                 hand.Cards.Add(this.Game.Deck.Draw());
+            }
         }
 
-        private void HandleSpecialActions(Card card)
+        private bool HandleSpecialActions(Card card)
         {
             switch (card.Value.ToLower())
             {
                 case "r":
                     this.ReverseTurn();
-                    break;
+                    return true;
                 case "s":
                     this.Game.Turn.ProgressTurn();
-                    break;
+                    this.Game.Turn.ProgressTurn();
+                    return true;
                 case "d2":
                     this.Draw(2);
                     this.Game.Turn.ProgressTurn();
-                    break;
+                    this.Game.Turn.ProgressTurn();
+                    return true;
                 case "d4":
                     this.Draw(4);
                     this.Game.Turn.ProgressTurn();
-                    break;
+                    this.Game.Turn.ProgressTurn();
+                    return true;
                 default:
-                    break;
+                    return false;
             }
         }
 
-        private bool IsValidPlay(Card card)
+        private bool IsValidPlay(Hand hand, Card card)
         {
+            if (!this.CardIsInHand(hand, card))
+            {
+                return false;
+            }
+
             if (card.Color == this.Game.CurrentColor)
             {
                 return true;
@@ -78,15 +99,14 @@ namespace unobot_main.Models
 
             if (Card.IsWildCard(card))
             {
-                if (card.Value != "d4")
+                if (card.Value.ToLower() != "d4")
                 {
                     return true;
                 }
 
                 // if playing d4, you can't have another valid play.
-                var hand = this.GetHand(this.Game.Turn.Value);
                 var haveCurrentColor = hand.Cards.Any(c => c.Color == this.Game.CurrentColor);
-                var haveCurrentValue = hand.Cards.Any(c => c.Value == this.Game.CurrentValue);
+                var haveCurrentValue = hand.Cards.Any(c => c.Value == this.Game.CurrentValue) && this.Game.CurrentValue != "d4";
 
                 return !haveCurrentValue && !haveCurrentColor;
             }
@@ -94,9 +114,16 @@ namespace unobot_main.Models
             return false;
         }
 
+        private Card RemoveCardFromHand(Hand hand, Card card)
+        {
+            var inHand = hand.Cards.First(c => c.Display == card.Display);
+            hand.Cards.Remove(inHand);
+            return inHand;
+        }
+
         private void ReverseTurn()
         {
-            this.Game.Players.ToList().Reverse();
+            this.Game.Players.Reverse();
         }
     }
 }
