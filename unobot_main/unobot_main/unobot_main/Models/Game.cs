@@ -58,7 +58,12 @@ namespace unobot_main.Models
             var card = Card.Create(input);
             var action = new Action(this);
             action.TakeAction(card);
+
+            // TODO: check for uno condition
+            // TODO: check for victory condition
         }
+
+        // TODO: if deck is empty, shuffle discard into deck
 
         private Stack<Card> CreateDiscard(Deck deck)
         {
@@ -67,9 +72,11 @@ namespace unobot_main.Models
 
             // Draw another card if WD4
             while (draw.Display == "WD4")
+            {
                 draw = deck.Draw();
+            }
 
-            // TODO: if W the next player chooses the color
+            // TODO: if W the next player chooses the color (maybe we just random for first pass)
 
             discard.Push(draw);
             return discard;
