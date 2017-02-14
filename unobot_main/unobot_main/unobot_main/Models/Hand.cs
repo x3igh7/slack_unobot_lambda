@@ -4,8 +4,7 @@ namespace unobot_main.Models
 {
     public class Hand
     {
-        public Player Player { get; set; }
-
         public IList<Card> Cards { get; set; }
+        public Player Player { get; set; }
     }
 }

@@ -6,9 +6,9 @@ namespace unobot_main.Models
     public class Card
     {
         public Color Color { get; set; }
-        public string Value { get; set; }
         public string Display { get; set; }
         public Color NewColor { get; set; }
+        public string Value { get; set; }
 
         public static Card Create(string input)
         {
@@ -34,18 +34,6 @@ namespace unobot_main.Models
             throw new ArgumentException();
         }
 
-        public static bool IsWildCard(Card card)
-        {
-            return card.Color == Color.Wild;
-        }
-
-        public static Card CreateWildCard(Color color, string prefix, string value, Color newColor)
-        {
-            var card = CreateSpecificCard(color, prefix, value);
-            card.NewColor = newColor;
-            return card;
-        }
-
         public static Card CreateSpecificCard(Color color, string prefix, string value)
         {
             return new Card
@@ -56,23 +44,11 @@ namespace unobot_main.Models
             };
         }
 
-        public static string GetPrefixFromColor(Color color)
+        public static Card CreateWildCard(Color color, string prefix, string value, Color newColor)
         {
-            switch (color)
-            {
-                case Color.Red:
-                    return "r";
-                case Color.Blue:
-                    return "b";
-                case Color.Green:
-                    return "g";
-                case Color.Yellow:
-                    return "y";
-                case Color.Wild:
-                    return "w";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(color), color, null);
-            }
+            var card = CreateSpecificCard(color, prefix, value);
+            card.NewColor = newColor;
+            return card;
         }
 
         public static Color GetColorFromPrefix(string input)
@@ -100,6 +76,54 @@ namespace unobot_main.Models
             }
         }
 
+        public static string GetPrefixFromColor(Color color)
+        {
+            switch (color)
+            {
+                case Color.Red:
+                    return "r";
+                case Color.Blue:
+                    return "b";
+                case Color.Green:
+                    return "g";
+                case Color.Yellow:
+                    return "y";
+                case Color.Wild:
+                    return "w";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(color), color, null);
+            }
+        }
+
+        public static bool IsWildCard(Card card)
+        {
+            return card.Color == Color.Wild;
+        }
+
+        private static string GetValueFromInput(string input)
+        {
+            return input.Substring(1).Trim();
+        }
+
+        private static bool HandleWildCard(string input, out Card card)
+        {
+            if (input.Length == 3 && input[0].ToString().ToLower() == "w")
+            {
+                var split = input.Split(' ');
+                {
+                    card = CreateWildCard(
+                        Color.Wild,
+                        GetPrefixFromColor(Color.Wild),
+                        string.Empty,
+                        GetColorFromPrefix(split[1]));
+                    return true;
+                }
+            }
+
+            card = null;
+            return false;
+        }
+
         private static bool HandleWildDrawFour(string input, out Card card)
         {
             if (input.Length == 5)
@@ -122,30 +146,6 @@ namespace unobot_main.Models
 
             card = null;
             return false;
-        }
-
-        private static bool HandleWildCard(string input, out Card card)
-        {
-            if (input.Length == 3 && input[0].ToString().ToLower() == "w")
-            {
-                var split = input.Split(' ');
-                {
-                    card = CreateWildCard(
-                        Color.Wild,
-                        GetPrefixFromColor(Color.Wild),
-                        string.Empty,
-                        GetColorFromPrefix(split[1]));
-                    return true;
-                }
-            }
-
-            card = null;
-            return false;
-        }
-
-        private static string GetValueFromInput(string input)
-        {
-            return input.Substring(1).Trim();
         }
 
         private static bool IsValidValue(string value)
