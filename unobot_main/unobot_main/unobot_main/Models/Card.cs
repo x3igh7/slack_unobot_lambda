@@ -12,33 +12,20 @@ namespace unobot_main.Models
 
         public static Card Create(string input)
         {
-            string[] split;
-            string value;
-
             input = input.Trim();
-            if (input.Length == 3 && input[0].ToString().ToLower() == "w")
+            Card card;
+            if (HandleWildCard(input, out card))
             {
-                split = input.Split(' ');
-                return CreateWildCard(Color.Wild, GetPrefixFromColor(Color.Wild), string.Empty, GetColorFromPrefix(split[1]));
+                return card;
             }
 
-            if (input.Length == 5)
+            if (HandleWildDrawFour(input, out card))
             {
-                split = input.Split(' ');
-                var card = split[0];
-                value = GetValueFromInput(card);
-                if (IsValidValue(value))
-                {
-                    return CreateWildCard(
-                        Color.Wild,
-                        GetPrefixFromColor(Color.Wild),
-                        value,
-                        GetColorFromPrefix(split[1]));
-                }
+                return card;
             }
 
             var color = GetColorFromPrefix(input);
-            value = GetValueFromInput(input);
+            var value = GetValueFromInput(input);
             if (IsValidValue(value))
             {
                 return CreateSpecificCard(color, GetPrefixFromColor(color), value);
@@ -62,11 +49,11 @@ namespace unobot_main.Models
         public static Card CreateSpecificCard(Color color, string prefix, string value)
         {
             return new Card
-                {
-                    Color = color,
-                    Value = value,
-                    Display = $"{prefix}{value}"
-                };
+            {
+                Color = color,
+                Value = value,
+                Display = $"{prefix}{value}"
+            };
         }
 
         public static string GetPrefixFromColor(Color color)
@@ -111,6 +98,49 @@ namespace unobot_main.Models
                 default:
                     throw new ArgumentOutOfRangeException(nameof(input), prefix, null);
             }
+        }
+
+        private static bool HandleWildDrawFour(string input, out Card card)
+        {
+            if (input.Length == 5)
+            {
+                var split = input.Split(' ');
+                var play = split[0];
+                var value = GetValueFromInput(play);
+                if (IsValidValue(value))
+                {
+                    {
+                        card = CreateWildCard(
+                            Color.Wild,
+                            GetPrefixFromColor(Color.Wild),
+                            value,
+                            GetColorFromPrefix(split[1]));
+                        return true;
+                    }
+                }
+            }
+
+            card = null;
+            return false;
+        }
+
+        private static bool HandleWildCard(string input, out Card card)
+        {
+            if (input.Length == 3 && input[0].ToString().ToLower() == "w")
+            {
+                var split = input.Split(' ');
+                {
+                    card = CreateWildCard(
+                        Color.Wild,
+                        GetPrefixFromColor(Color.Wild),
+                        string.Empty,
+                        GetColorFromPrefix(split[1]));
+                    return true;
+                }
+            }
+
+            card = null;
+            return false;
         }
 
         private static string GetValueFromInput(string input)
