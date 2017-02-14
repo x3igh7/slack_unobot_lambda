@@ -32,6 +32,34 @@ namespace unobot_main.Models
         {
         }
 
+        public void Play(Card card)
+        {
+            if (this.IsValidPlay(card))
+            {
+                // TODO: this.TakeAction(card);
+            }
+        }
+
+        private bool IsValidPlay(Card card)
+        {
+            if (card.Color == this.CurrentColor)
+            {
+                return true;
+            }
+
+            if (card.Value == this.CurrentValue)
+            {
+                return true;
+            }
+
+            if (Card.IsWildCard(card))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public bool AddPlayer(Player player)
         {
             if (this.Players.Count == 4)

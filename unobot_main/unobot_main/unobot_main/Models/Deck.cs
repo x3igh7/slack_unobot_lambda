@@ -54,7 +54,7 @@ namespace unobot_main.Models
 
         private void NewCardsByColor(Color color)
         {
-            var prefix = this.GetColorPrefix(color);
+            var prefix = Card.GetPrefixFromColor(color);
             this.AddNumberedCards(color, prefix);
             this.AddSpecialCards(color, prefix);
         }
@@ -88,43 +88,15 @@ namespace unobot_main.Models
         {
             for (var i = 0; i < 2; i++)
             {
-                this.AddSpecialCard(color, prefix, "S");
-                this.AddSpecialCard(color, prefix, "D2");
-                this.AddSpecialCard(color, prefix, "R");
+                this.Cards.Push(Card.CreateSpecificCard(color, prefix, "S"));
+                this.Cards.Push(Card.CreateSpecificCard(color, prefix, "D2"));
+                this.Cards.Push(Card.CreateSpecificCard(color, prefix, "R"));
             }
 
-            this.AddSpecialCard(Color.Wild, this.GetColorPrefix(Color.Wild), string.Empty);
-            this.AddSpecialCard(Color.Wild, this.GetColorPrefix(Color.Wild), "4");
+            this.Cards.Push(Card.CreateSpecificCard(Color.Wild, Card.GetPrefixFromColor(Color.Wild), string.Empty));
+            this.Cards.Push(Card.CreateSpecificCard(Color.Wild, Card.GetPrefixFromColor(Color.Wild), "4"));
         }
 
-        private void AddSpecialCard(Color color, string prefix, string value)
-        {
-            this.Cards.Push(
-                new Card
-                {
-                    Color = color,
-                    Value = value,
-                    Display = $"{prefix}{value}"
-                });
-        }
 
-        private string GetColorPrefix(Color color)
-        {
-            switch (color)
-            {
-                case Color.Red:
-                    return "r";
-                case Color.Blue:
-                    return "b";
-                case Color.Green:
-                    return "g";
-                case Color.Yellow:
-                    return "y";
-                case Color.Wild:
-                    return "w";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(color), color, null);
-            }
-        }
     }
 }
