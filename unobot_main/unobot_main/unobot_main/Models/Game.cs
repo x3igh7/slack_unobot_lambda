@@ -5,31 +5,18 @@ namespace unobot_main.Models
 {
     public class Game
     {
-        public IList<Player> Players { get; set; }
-        public Deck Deck { get; set; }
-        public IList<Hand> Hands { get; set; }
-        public Stack<Card> Discard { get; set; }
-        public int Turn { get; set; }
-        public GameStatus Status { get; set; }
-        public string CurrentValue { get; set; }
         public Color CurrentColor { get; set; }
+        public string CurrentValue { get; set; }
+        public Deck Deck { get; set; }
+        public Stack<Card> Discard { get; set; }
+        public List<Hand> Hands { get; set; }
+        public List<Player> Players { get; set; }
+        public GameStatus Status { get; set; }
+        public Turn Turn { get; set; }
 
-        public void Create()
+        public Game()
         {
-            var deck = this.NewDeck();
-
-            this.Deck = deck;
-            this.Players = new List<Player>();
-            this.Hands = new List<Hand>();
-            this.Discard = new Stack<Card>();
-            this.Turn = 0;
-            this.Status = GameStatus.Preparing;
-            this.CurrentColor = Color.Wild;
-            this.CurrentValue = string.Empty;
-        }
-
-        public void Load()
-        {
+            this.Turn = new Turn(this);
         }
 
         public bool AddPlayer(Player player)
@@ -49,6 +36,35 @@ namespace unobot_main.Models
             return true;
         }
 
+        public void Create()
+        {
+            var deck = this.NewDeck();
+
+            this.Deck = deck;
+            this.Players = new List<Player>();
+            this.Hands = new List<Hand>();
+            this.Discard = new Stack<Card>();
+            this.Status = GameStatus.Preparing;
+            this.CurrentColor = Color.Wild;
+            this.CurrentValue = string.Empty;
+        }
+
+        public void Load()
+        {
+        }
+
+        public void Play(string input)
+        {
+            var card = Card.Create(input);
+            var action = new Action(this);
+            action.TakeAction(card);
+
+            // TODO: check for uno condition
+            // TODO: check for victory condition
+        }
+
+        // TODO: if deck is empty, shuffle discard into deck
+
         private Stack<Card> CreateDiscard(Deck deck)
         {
             var discard = new Stack<Card>();
@@ -60,7 +76,7 @@ namespace unobot_main.Models
                 draw = deck.Draw();
             }
 
-            // TODO: if W the next player chooses the color
+            // TODO: if W the next player chooses the color (maybe we just random for first pass)
 
             discard.Push(draw);
             return discard;
