@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -16,8 +17,8 @@ namespace unobot_main
     public class Main
     {
         private string _body;
-        private string _userName = "UnoBot";
-        private string _incomingWebHookUrl = "localhost";
+        private readonly string _userName = "UnoBot";
+        private readonly string _incomingWebHookUrl = "localhost";
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -65,7 +66,7 @@ namespace unobot_main
             };
 
             var commands = order.Text.Split(' ');
-            var command = commands[0] ?? string.Empty;
+            var command = commands[1] ?? string.Empty;
 
             switch (command)
             {
@@ -85,35 +86,27 @@ namespace unobot_main
 
         public async Task<string> CreateDeck(OutgoingWebookMessage message)
         {
+            Console.WriteLine($"CreateDeck message: {message.Text}");
 
-            //var deck = new Deck();
-            //deck.New();
-            var payload = new Payload
+            var deck = new Deck();
+            deck.New();
+            var payload = new ResponsePayload
             {
-                Channel = message.ChannelId,
-                Username = this._userName,
-                Text = JsonConvert.SerializeObject("payload")
+                Text = "I just created the deck"
             };
 
-            if (message.TriggerWord.Equals("debug"))
-            {
-                return JsonConvert.SerializeObject(payload);
-            }
+            if (!message.Text.Contains("--debug")) return JsonConvert.SerializeObject(payload);
 
-            using (var client = new HttpClient())
-            {
-                await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
-            }
+            Console.WriteLine("Sending Debug Info");
+            payload.Text = JsonConvert.SerializeObject(deck);
 
-            return "working on it..";
+            return JsonConvert.SerializeObject(payload);
         }
 
         private string CreateDebugBody(SlackMessage order)
         {
-            var payload = new Payload
+            var payload = new ResponsePayload()
             {
-                Channel = order.ChannelId,
-                Username = this._userName,
                 Text = JsonConvert.SerializeObject(this._body)
             };
 
