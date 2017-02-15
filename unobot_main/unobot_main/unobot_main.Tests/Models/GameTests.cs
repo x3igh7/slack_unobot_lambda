@@ -9,6 +9,20 @@ namespace unobot_main.Tests.Models
     public class GameTests
     {
         [Fact]
+        public void StartGameTest()
+        {
+            var game = GameFactory.New();
+            game.AddPlayer(PlayerFactory.New(1));
+            game.AddPlayer(PlayerFactory.New(2));
+            game.AddPlayer(PlayerFactory.New(3));
+            game.AddPlayer(PlayerFactory.New(4));
+
+            game.Start();
+
+            Assert.True(game.Discard.Count == 1);
+        }
+
+        [Fact]
         public void GameAddPlayer()
         {
             var game = new Game();
