@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using unobot_main.Models.Enums;
 
 namespace unobot_main.Models
@@ -49,6 +50,15 @@ namespace unobot_main.Models
             this.CurrentValue = string.Empty;
         }
 
+        public void Start()
+        {
+            this.Status = GameStatus.InProgress;
+            this.CreateDiscard();
+
+            // should return the results. 
+            //if wild, should return what color is in play
+        }
+
         public void Load()
         {
         }
@@ -87,21 +97,27 @@ namespace unobot_main.Models
             this.Discard.Push(topCard);
         }
 
-        private Stack<Card> CreateDiscard(Deck deck)
+        private void CreateDiscard()
         {
-            var discard = new Stack<Card>();
-            var draw = deck.Draw();
+            var draw = this.Deck.Draw();
 
             // Draw another card if WD4
-            while (draw.Display == "WD4")
+            while (draw.Display == "wD4")
             {
-                draw = deck.Draw();
+                draw = this.Deck.Draw();
             }
 
-            // TODO: if W the next player chooses the color (maybe we just random for first pass)
+            if (draw.Display == "w")
+            {
+                var rnd = new Random();
+                // if W the next player chooses the color
+                // but for first pass just assigning a random color
+                // apply a random color other than wild
+                this.CurrentColor = (Color)rnd.Next(1, 4);
+            }
 
-            discard.Push(draw);
-            return discard;
+
+            this.Discard.Push(draw);
         }
 
         private bool IsUno()
