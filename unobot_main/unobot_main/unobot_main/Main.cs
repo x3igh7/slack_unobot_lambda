@@ -88,8 +88,9 @@ namespace unobot_main
         {
             Console.WriteLine($"CreateDeck message: {message.Text}");
 
-            var deck = new Deck();
-            deck.New();
+            var game = new Game();
+            game.Create();
+            
             var payload = new ResponsePayload
             {
                 Text = "I just created the deck"
@@ -98,7 +99,7 @@ namespace unobot_main
             if (!message.Text.Contains("--debug")) return JsonConvert.SerializeObject(payload);
 
             Console.WriteLine("Sending Debug Info");
-            payload.Text = JsonConvert.SerializeObject(deck);
+            payload.Text = JsonConvert.SerializeObject(game.Deck);
 
             return JsonConvert.SerializeObject(payload);
         }
