@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using unobot_main.Models;
 using unobot_main.Models.Enums;
 using unobot_main.Tests.Specs;
@@ -65,6 +66,39 @@ namespace unobot_main.Tests.Models
             var newHand = action.GetHand(currentTurn);
             var newInHandCount = newHand.Cards.Count(c => c.Display == card.Display);
             Assert.True(newInHandCount < inHandCount);
+        }
+
+        [Fact]
+        public void TakeActionWithCardInHandWithPassAndDiscardRecycleTest()
+        {
+            var game = GameFactory.InProgress();
+            var action = new Action(game);
+            var currentTurn = game.Turn.Value;
+            var currentHand = action.GetHand(currentTurn);
+
+            var inHandCount = currentHand.Cards.Count;
+            game.Discard = game.Deck.Cards;
+            game.Deck.Cards = new Stack<Card>();
+            game.Deck.Cards.Push(new Card
+            {
+                Color = Color.Red,
+                Value = "1",
+                Display = "r1"
+            });
+
+            var discardCount = game.Discard.Count;
+            var discardTop = game.Discard.Peek();
+
+            action.Pass();
+
+            Assert.True(game.Turn.Value == currentTurn + 1);
+            Assert.True(game.Discard.Count == 1);
+            Assert.True(game.Deck.Cards.Count == discardCount - 1);
+            Assert.True(game.Discard.Peek().Display == discardTop.Display);
+
+            var newHand = action.GetHand(currentTurn);
+            var newInHandCount = newHand.Cards.Count;
+            Assert.True(newInHandCount == inHandCount + 1);
         }
 
         [Fact]

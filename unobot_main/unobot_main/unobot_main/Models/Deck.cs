@@ -7,7 +7,13 @@ namespace unobot_main.Models
 {
     public class Deck
     {
+        public Game Game { get; set; }
         public Stack<Card> Cards { get; set; }
+
+        public Deck(Game game)
+        {
+            this.Game = game;
+        }
 
         public List<Card> DealHand()
         {
@@ -23,7 +29,12 @@ namespace unobot_main.Models
 
         public Card Draw()
         {
-            return this.Cards.Pop();
+            var card = this.Cards.Pop();
+            if (this.Cards.Count == 0)
+            {
+                this.Game.RecycleDiscard();
+            }
+            return card;
         }
 
         // Loads a deck from json

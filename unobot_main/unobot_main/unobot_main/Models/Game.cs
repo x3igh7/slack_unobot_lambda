@@ -80,9 +80,11 @@ namespace unobot_main.Models
 
         public void RecycleDiscard()
         {
+            var topCard = this.Discard.Pop();
             this.Deck.Cards = this.Discard;
             this.Deck.Shuffle();
             this.Discard = new Stack<Card>();
+            this.Discard.Push(topCard);
         }
 
         private Stack<Card> CreateDiscard(Deck deck)
@@ -114,7 +116,7 @@ namespace unobot_main.Models
 
         private Deck NewDeck()
         {
-            var deck = new Deck();
+            var deck = new Deck(this);
             deck.New();
             return deck;
         }

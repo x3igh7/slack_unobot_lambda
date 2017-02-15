@@ -86,13 +86,13 @@ namespace unobot_main
         public async Task<string> CreateDeck(OutgoingWebookMessage message)
         {
 
-            var deck = new Deck();
-            deck.New();
+            //var deck = new Deck();
+            //deck.New();
             var payload = new Payload
             {
                 Channel = message.ChannelId,
                 Username = this._userName,
-                Text = JsonConvert.SerializeObject(deck.Cards)
+                Text = JsonConvert.SerializeObject("payload")
             };
 
             if (message.TriggerWord.Equals("debug"))
