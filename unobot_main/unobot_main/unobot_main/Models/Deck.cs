@@ -8,6 +8,12 @@ namespace unobot_main.Models
     public class Deck
     {
         public Stack<Card> Cards { get; set; }
+        public Game Game { get; set; }
+
+        public Deck(Game game)
+        {
+            this.Game = game;
+        }
 
         public List<Card> DealHand()
         {
@@ -23,7 +29,12 @@ namespace unobot_main.Models
 
         public Card Draw()
         {
-            return this.Cards.Pop();
+            var card = this.Cards.Pop();
+            if (this.Cards.Count == 0)
+            {
+                this.Game.RecycleDiscard();
+            }
+            return card;
         }
 
         // Loads a deck from json
@@ -64,6 +75,7 @@ namespace unobot_main.Models
 
             for (var j = 0; j < 2; j++)
             for (var i = 1; i <= 9; i++)
+            {
                 this.Cards.Push(
                     new Card
                     {
@@ -71,6 +83,7 @@ namespace unobot_main.Models
                         Value = i.ToString(),
                         Display = $"{prefix}{i}"
                     });
+            }
         }
 
         private void AddSpecialCards(Color color, string prefix)

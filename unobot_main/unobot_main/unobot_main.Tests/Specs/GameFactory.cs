@@ -15,13 +15,20 @@ namespace unobot_main.Tests.Specs
             return game;
         }
 
-        public static Game InProgress(int numerOfPlayers = 2)
+        public static Game InProgress(int numberOfPlayers = 2)
         {
-            var deck = new Deck();
+            var game = new Game
+            {
+                Status = GameStatus.InProgress
+            };
+
+            var deck = new Deck(game);
             deck.New();
 
+            game.Deck = deck;
+
             var players = new List<Player>();
-            for (var i = 1; i <= numerOfPlayers; i++)
+            for (var i = 1; i <= numberOfPlayers; i++)
             {
                 players.Add(PlayerFactory.New(i));
             }
@@ -31,16 +38,11 @@ namespace unobot_main.Tests.Specs
             var discard = new Stack<Card>();
             discard.Push(deck.Draw());
 
-            var game = new Game
-            {
-                CurrentColor = discard.Peek().Color,
-                CurrentValue = discard.Peek().Value,
-                Deck = deck,
-                Discard = discard,
-                Hands = hands,
-                Players = players,
-                Status = GameStatus.InProgress
-            };
+            game.CurrentColor = discard.Peek().Color;
+            game.CurrentValue = discard.Peek().Value;
+            game.Discard = discard;
+            game.Hands = hands;
+            game.Players = players;
 
             return game;
         }
