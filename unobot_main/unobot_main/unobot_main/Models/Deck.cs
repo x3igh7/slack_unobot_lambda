@@ -7,8 +7,8 @@ namespace unobot_main.Models
 {
     public class Deck
     {
-        public Game Game { get; set; }
         public Stack<Card> Cards { get; set; }
+        public Game Game { get; set; }
 
         public Deck(Game game)
         {
@@ -75,6 +75,7 @@ namespace unobot_main.Models
 
             for (var j = 0; j < 2; j++)
             for (var i = 1; i <= 9; i++)
+            {
                 this.Cards.Push(
                     new Card
                     {
@@ -82,6 +83,7 @@ namespace unobot_main.Models
                         Value = i.ToString(),
                         Display = $"{prefix}{i}"
                     });
+            }
         }
 
         private void AddSpecialCards(Color color, string prefix)
