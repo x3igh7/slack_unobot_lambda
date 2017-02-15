@@ -16,8 +16,8 @@ namespace unobot_main
     public class Main
     {
         private string _body;
-        private string _userName = "UnoBot";
-        private string _incomingWebHookUrl = "localhost";
+        private readonly string _userName = "UnoBot";
+        private readonly string _incomingWebHookUrl = "localhost";
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -65,7 +65,7 @@ namespace unobot_main
             };
 
             var commands = order.Text.Split(' ');
-            var command = commands[0] ?? string.Empty;
+            var command = commands[1] ?? string.Empty;
 
             switch (command)
             {
@@ -88,11 +88,9 @@ namespace unobot_main
 
             var deck = new Deck();
             deck.New();
-            var payload = new Payload
+            var payload = new 
             {
-                Channel = message.ChannelId,
-                Username = this._userName,
-                Text = JsonConvert.SerializeObject(deck.Cards)
+                text = JsonConvert.SerializeObject(deck.Cards)
             };
 
             if (message.TriggerWord.Equals("debug"))
@@ -100,12 +98,12 @@ namespace unobot_main
                 return JsonConvert.SerializeObject(payload);
             }
 
-            using (var client = new HttpClient())
-            {
-                await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
-            }
+            //using (var client = new HttpClient())
+            //{
+            //    await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+            //}
 
-            return "working on it..";
+            return JsonConvert.SerializeObject(payload);
         }
 
         private string CreateDebugBody(SlackMessage order)
