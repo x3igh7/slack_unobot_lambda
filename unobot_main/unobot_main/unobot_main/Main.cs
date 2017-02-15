@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -85,33 +86,27 @@ namespace unobot_main
 
         public async Task<string> CreateDeck(OutgoingWebookMessage message)
         {
+            Console.WriteLine($"CreateDeck message: {message.Text}");
 
             var deck = new Deck();
             deck.New();
-            var payload = new 
+            var payload = new ResponsePayload
             {
-                text = JsonConvert.SerializeObject(deck.Cards)
+                Text = "I just created the deck"
             };
 
-            if (message.TriggerWord.Equals("debug"))
-            {
-                return JsonConvert.SerializeObject(payload);
-            }
+            if (!message.Text.Contains("--debug")) return JsonConvert.SerializeObject(payload);
 
-            //using (var client = new HttpClient())
-            //{
-            //    await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
-            //}
+            Console.WriteLine("Sending Debug Info");
+            payload.Text = JsonConvert.SerializeObject(deck);
 
             return JsonConvert.SerializeObject(payload);
         }
 
         private string CreateDebugBody(SlackMessage order)
         {
-            var payload = new Payload
+            var payload = new ResponsePayload()
             {
-                Channel = order.ChannelId,
-                Username = this._userName,
                 Text = JsonConvert.SerializeObject(this._body)
             };
 

@@ -2,14 +2,8 @@
 
 namespace unobot_main.SlackApi
 {
-    public class Payload
+    public class ResponsePayload
     {
-        [JsonProperty("channel")]
-        public string Channel { get; set; }
-
-        [JsonProperty("username")]
-        public string Username { get; set; }
-
         [JsonProperty("text")]
         public string Text { get; set; }
     }
