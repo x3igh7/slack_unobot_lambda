@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using unobot_main.Models;
+using unobot_main.Models.Enums;
+using unobot_main.Tests.Specs;
 using Xunit;
 
 namespace unobot_main.Tests.Models
@@ -11,7 +13,8 @@ namespace unobot_main.Tests.Models
         [Fact]
         public void DeckDealHandTest()
         {
-            var deck = new Deck();
+            var game = GameFactory.New();
+            var deck = new Deck(game);
             deck.New();
 
             var hand = deck.DealHand();
@@ -23,7 +26,8 @@ namespace unobot_main.Tests.Models
         [Fact]
         public void DeckDraw()
         {
-            var deck = new Deck();
+            var game = GameFactory.New();
+            var deck = new Deck(game);
             deck.New();
 
             var draw = deck.Draw();
@@ -33,10 +37,33 @@ namespace unobot_main.Tests.Models
         }
 
         [Fact]
+        public void DeckDrawWithDiscardRecycle()
+        {
+            var game = GameFactory.InProgress();
+            game.Discard = game.Deck.Cards;
+            var deck = new Deck(game) {Cards = new Stack<Card>()};
+            deck.Cards.Push(new Card
+            {
+                Color = Color.Red,
+                Display = "r1",
+                Value = "1"
+            });
+
+            var discardCount = game.Discard.Count;
+            var discardTop = game.Discard.Peek();
+            deck.Draw();
+
+            Assert.True(game.Discard.Count == 1);
+            Assert.True(game.Deck.Cards.Count == discardCount - 1);
+            Assert.True(game.Discard.Peek().Display == discardTop.Display);
+        }
+
+        [Fact]
         public void DeckShuffleTest()
         {
+            var game = GameFactory.New();
             var seed = new Random(1);
-            var deck = new Deck
+            var deck = new Deck(game)
             {
                 Cards = new Stack<Card>()
             };
@@ -58,7 +85,8 @@ namespace unobot_main.Tests.Models
         [Fact]
         public void NewDeckTest()
         {
-            var deck = new Deck();
+            var game = GameFactory.New();
+            var deck = new Deck(game);
             deck.New();
 
             Assert.True(deck.Cards.Count == 108);

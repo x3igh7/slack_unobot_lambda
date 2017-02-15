@@ -44,16 +44,18 @@ namespace unobot_main.Models
             };
         }
 
-        public static Card CreateWildCard(Color color, string prefix, string value, Color newColor)
+        public static Card CreateWildCard(string value, Color newColor)
         {
-            var card = CreateSpecificCard(color, prefix, value);
+            var card = CreateSpecificCard(Color.Wild, GetPrefixFromColor(Color.Wild), value);
             card.NewColor = newColor;
             return card;
         }
 
         public static Color GetColorFromPrefix(string input)
         {
-            if (input.Length == 0)
+            const int minInputLength = 1;
+            const int maxInputLength = 5;
+            if (input.Length < minInputLength || input.Length > maxInputLength)
             {
                 throw new ArgumentOutOfRangeException(nameof(input), input, null);
             }
@@ -112,8 +114,6 @@ namespace unobot_main.Models
                 var split = input.Split(' ');
                 {
                     card = CreateWildCard(
-                        Color.Wild,
-                        GetPrefixFromColor(Color.Wild),
                         string.Empty,
                         GetColorFromPrefix(split[1]));
                     return true;
@@ -135,8 +135,6 @@ namespace unobot_main.Models
                 {
                     {
                         card = CreateWildCard(
-                            Color.Wild,
-                            GetPrefixFromColor(Color.Wild),
                             value,
                             GetColorFromPrefix(split[1]));
                         return true;

@@ -39,6 +39,13 @@ namespace unobot_main.Models
             this.Game.Discard.Push(this.RemoveCardFromHand(hand, card));
         }
 
+        public void Pass()
+        {
+            var hand = this.GetHand(this.Game.Turn.Value);
+            hand.Cards.Add(this.Game.Deck.Draw());
+            this.Game.Turn.ProgressTurn();
+        }
+
         private bool CardIsInHand(Hand hand, Card card)
         {
             return hand.Cards.Any(c => c.Display == card.Display);
@@ -62,18 +69,15 @@ namespace unobot_main.Models
                     this.ReverseTurn();
                     return true;
                 case "s":
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 case "d2":
                     this.Draw(2);
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 case "d4":
                     this.Draw(4);
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 default:
                     return false;
