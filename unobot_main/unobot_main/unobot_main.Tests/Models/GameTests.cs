@@ -1,28 +1,13 @@
 ﻿using System.Linq;
 using unobot_main.Models;
 using unobot_main.Models.Enums;
+using unobot_main.Tests.Specs;
 using Xunit;
 
 namespace unobot_main.Tests.Models
 {
     public class GameTests
     {
-        [Fact]
-        public void GameCreateTest()
-        {
-            var game = new Game();
-            game.Create();
-
-            Assert.True(game.Deck.Cards.Count == 108);
-            Assert.True(game.Discard.Count == 0);
-            Assert.True(game.Hands.Count == 0);
-            Assert.True(game.Players.Count == 0);
-            Assert.True(game.Turn.Value == 0);
-            Assert.True(game.Status == GameStatus.Preparing);
-            Assert.True(game.CurrentColor == Color.Wild);
-            Assert.True(game.CurrentValue == string.Empty);
-        }
-
         [Fact]
         public void GameAddPlayer()
         {
@@ -72,6 +57,48 @@ namespace unobot_main.Tests.Models
             Assert.True(!result);
             Assert.True(game.Players.Count == 4);
             Assert.True(game.Hands.FirstOrDefault(h => h.Player.Name == finalPlayer.Name) == null);
+        }
+
+        [Fact]
+        public void GameCreateTest()
+        {
+            var game = new Game();
+            game.Create();
+
+            Assert.True(game.Deck.Cards.Count == 108);
+            Assert.True(game.Discard.Count == 0);
+            Assert.True(game.Hands.Count == 0);
+            Assert.True(game.Players.Count == 0);
+            Assert.True(game.Turn.Value == 0);
+            Assert.True(game.Status == GameStatus.Preparing);
+            Assert.True(game.CurrentColor == Color.Wild);
+            Assert.True(game.CurrentValue == string.Empty);
+        }
+
+        [Fact]
+        public void RecycleDiscardTest()
+        {
+            var game = GameFactory.InProgress();
+            var discardCount = game.Discard.Count;
+
+            game.RecycleDiscard();
+
+            Assert.True(discardCount == game.Deck.Cards.Count);
+            Assert.True(game.Discard.Count == 0);
+        }
+
+        [Fact]
+        public void StartGameTest()
+        {
+            var game = GameFactory.New();
+            game.AddPlayer(PlayerFactory.New(1));
+            game.AddPlayer(PlayerFactory.New(2));
+            game.AddPlayer(PlayerFactory.New(3));
+            game.AddPlayer(PlayerFactory.New(4));
+
+            game.Start();
+
+            Assert.True(game.Discard.Count == 1);
         }
     }
 }
