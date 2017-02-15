@@ -20,6 +20,20 @@ namespace unobot_main.Tests.Models
         }
 
         [Fact]
+        public void PassTest()
+        {
+            var game = GameFactory.InProgress();
+            var currentTurn = game.Turn.Value;
+            var playerHandCount = game.Hands[currentTurn].Cards.Count;
+
+            var action = new Action(game);
+            action.Pass();
+
+            Assert.True(game.Hands[currentTurn].Cards.Count == playerHandCount + 1);
+            Assert.True(game.Turn.Value == currentTurn + 1);
+        }
+
+        [Fact]
         public void TakeActionWithCardInHandTest()
         {
             var game = GameFactory.InProgress();
@@ -285,20 +299,6 @@ namespace unobot_main.Tests.Models
             var newHand = action.GetHand(currentTurn);
             var newInHandCount = newHand.Cards.Count(c => c.Display == input);
             Assert.True(newInHandCount < inHandCount);
-        }
-
-        [Fact]
-        public void PassTest()
-        {
-            var game = GameFactory.InProgress();
-            var currentTurn = game.Turn.Value;
-            var playerHandCount = game.Hands[currentTurn].Cards.Count;
-
-            var action = new Action(game);
-            action.Pass();
-
-            Assert.True(game.Hands[currentTurn].Cards.Count == playerHandCount + 1);
-            Assert.True(game.Turn.Value == currentTurn + 1);
         }
     }
 }
