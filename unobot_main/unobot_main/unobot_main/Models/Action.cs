@@ -39,6 +39,13 @@ namespace unobot_main.Models
             this.Game.Discard.Push(this.RemoveCardFromHand(hand, card));
         }
 
+        public void Pass()
+        {
+            var hand = this.GetHand(this.Game.Turn.Value);
+            hand.Cards.Add(this.Game.Deck.Draw());
+            this.Game.Turn.ProgressTurn();
+        }
+
         private bool CardIsInHand(Hand hand, Card card)
         {
             return hand.Cards.Any(c => c.Display == card.Display);

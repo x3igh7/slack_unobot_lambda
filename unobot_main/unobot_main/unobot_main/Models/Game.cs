@@ -63,6 +63,12 @@ namespace unobot_main.Models
             // TODO: check for victory condition
         }
 
+        public void Pass()
+        {
+            var action = new Action(this);
+            action.Pass();
+        }
+
         public void RecycleDiscard()
         {
             this.Deck.Cards = this.Discard;
