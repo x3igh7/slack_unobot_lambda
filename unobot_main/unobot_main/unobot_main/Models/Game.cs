@@ -63,7 +63,12 @@ namespace unobot_main.Models
             // TODO: check for victory condition
         }
 
-        // TODO: if deck is empty, shuffle discard into deck
+        public void RecycleDiscard()
+        {
+            this.Deck.Cards = this.Discard;
+            this.Deck.Shuffle();
+            this.Discard = new Stack<Card>();
+        }
 
         private Stack<Card> CreateDiscard(Deck deck)
         {

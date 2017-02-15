@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using unobot_main.Models;
 using unobot_main.Models.Enums;
+using unobot_main.Tests.Specs;
 using Xunit;
 
 namespace unobot_main.Tests.Models
@@ -72,6 +73,18 @@ namespace unobot_main.Tests.Models
             Assert.True(!result);
             Assert.True(game.Players.Count == 4);
             Assert.True(game.Hands.FirstOrDefault(h => h.Player.Name == finalPlayer.Name) == null);
+        }
+
+        [Fact]
+        public void RecycleDiscardTest()
+        {
+            var game = GameFactory.InProgress();
+            var discardCount = game.Discard.Count;
+
+            game.RecycleDiscard();
+
+            Assert.True(discardCount == game.Deck.Cards.Count);
+            Assert.True(game.Discard.Count == 0);
         }
     }
 }
