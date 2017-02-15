@@ -69,18 +69,15 @@ namespace unobot_main.Models
                     this.ReverseTurn();
                     return true;
                 case "s":
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 case "d2":
                     this.Draw(2);
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 case "d4":
                     this.Draw(4);
-                    this.Game.Turn.ProgressTurn();
-                    this.Game.Turn.ProgressTurn();
+                    this.Game.Turn.ProgressTurn(2);
                     return true;
                 default:
                     return false;

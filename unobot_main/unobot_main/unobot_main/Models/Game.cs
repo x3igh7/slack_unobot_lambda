@@ -53,20 +53,29 @@ namespace unobot_main.Models
         {
         }
 
-        public void Play(string input)
-        {
-            var card = Card.Create(input);
-            var action = new Action(this);
-            action.TakeAction(card);
-
-            // TODO: check for uno condition
-            // TODO: check for victory condition
-        }
-
         public void Pass()
         {
             var action = new Action(this);
             action.Pass();
+        }
+
+        public void Play(string input)
+        {
+            var card = Card.Create(input);
+            var action = new Action(this);
+
+            action.TakeAction(card);
+
+            if (this.IsUno())
+            {
+                // return uno message
+            }
+
+            if (this.IsVictory())
+            {
+                // return is victory
+                this.Status = GameStatus.Completed;
+            }
         }
 
         public void RecycleDiscard()
@@ -91,6 +100,16 @@ namespace unobot_main.Models
 
             discard.Push(draw);
             return discard;
+        }
+
+        private bool IsUno()
+        {
+            return this.Hands[this.Turn.PreviousValue].Cards.Count == 1;
+        }
+
+        private bool IsVictory()
+        {
+            return this.Hands[this.Turn.PreviousValue].Cards.Count == 0;
         }
 
         private Deck NewDeck()
