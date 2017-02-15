@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Newtonsoft.Json;
@@ -88,8 +89,6 @@ namespace unobot_main
         {
             Console.WriteLine($"CreateDeck message: {message.Text}");
 
-            var deck = new Deck();
-            deck.New();
             var payload = new ResponsePayload
             {
                 Text = "I just created the deck"
@@ -98,7 +97,7 @@ namespace unobot_main
             if (!message.Text.Contains("--debug")) return JsonConvert.SerializeObject(payload);
 
             Console.WriteLine("Sending Debug Info");
-            payload.Text = JsonConvert.SerializeObject(deck);
+            payload.Text = JsonConvert.SerializeObject("testing");
 
             return JsonConvert.SerializeObject(payload);
         }

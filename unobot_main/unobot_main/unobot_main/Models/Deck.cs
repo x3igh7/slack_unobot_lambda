@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.DynamoDBv2.DataModel;
 using unobot_main.Models.Enums;
 
 namespace unobot_main.Models
@@ -8,6 +9,8 @@ namespace unobot_main.Models
     public class Deck
     {
         public Stack<Card> Cards { get; set; }
+
+        [DynamoDBIgnore]
         public Game Game { get; set; }
 
         public Deck(Game game)
