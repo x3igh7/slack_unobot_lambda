@@ -10,7 +10,6 @@ namespace unobot_main.Tests.Specs
         public static Game New()
         {
             var game = new Game();
-            game.Create();
 
             return game;
         }

@@ -1,9 +1,11 @@
 ﻿using System;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace unobot_main.Models
 {
     public class Turn
     {
+        [DynamoDBIgnore]
         public Game Game { get; set; }
         // Value reprents the index of the player who currently is taking their turn
         public int Value { get; set; }
