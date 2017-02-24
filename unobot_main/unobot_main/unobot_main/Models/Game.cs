@@ -11,6 +11,7 @@ namespace unobot_main.Models
         public Deck Deck { get; set; }
         public Stack<Card> Discard { get; set; }
         public List<Hand> Hands { get; set; }
+        public DateTime LastAction { get; set; }
         public List<Player> Players { get; set; }
         public GameStatus Status { get; set; }
         public Turn Turn { get; set; }
@@ -18,6 +19,7 @@ namespace unobot_main.Models
         public Game()
         {
             this.Turn = new Turn(this);
+            this.Create();
         }
 
         public bool AddPlayer(Player player)
@@ -48,10 +50,7 @@ namespace unobot_main.Models
             this.Status = GameStatus.Preparing;
             this.CurrentColor = Color.Wild;
             this.CurrentValue = string.Empty;
-        }
-
-        public void Load()
-        {
+            this.LastAction = DateTime.Now;
         }
 
         public void Pass()
@@ -78,6 +77,9 @@ namespace unobot_main.Models
                 // return is victory
                 this.Status = GameStatus.Completed;
             }
+
+            // update the last action.
+            this.LastAction = DateTime.Now;
         }
 
         public void RecycleDiscard()
