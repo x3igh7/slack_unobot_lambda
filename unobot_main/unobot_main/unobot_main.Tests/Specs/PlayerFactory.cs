@@ -8,6 +8,7 @@ namespace unobot_main.Tests.Specs
         {
             return new Player
             {
+                Id = id.ToString(),
                 Name = $"Player{id}"
             };
         }
