@@ -134,6 +134,7 @@ namespace unobot_main
                         response.Body = $"{player.Name} joined the game! There are now {team.CurrentGame.Players.Count} / 4 players";
                     }
 
+                    team.Save(this._context);
                     break;
             }
 
