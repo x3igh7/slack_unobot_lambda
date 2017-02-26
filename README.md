@@ -8,3 +8,4 @@ How to play:
   * join (up to 4 players can join, minimum of 2)
   * start (starts the game when you have enough players)
   * play _card_name_ (example: "Unbobot: play r1" pr "Unobot: play wd4 r" to choose a wild color)
+* Your hand will be private messaged to you so no one else knows what your cards are
