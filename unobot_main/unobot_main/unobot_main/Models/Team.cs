@@ -24,6 +24,11 @@ namespace unobot_main.Models
         [DynamoDBHashKey]
         public string TeamId { get; set; }
 
+        public bool IsGameInProgress()
+        {
+            return this.CurrentGame != null;
+        }
+
         public static async Task<Team> Load(DynamoDBContext context, string teamId, string channelId)
         {
             return await context.LoadAsync<Team>(teamId, channelId);

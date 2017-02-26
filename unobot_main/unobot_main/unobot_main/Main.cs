@@ -83,6 +83,7 @@ namespace unobot_main
 
             var commands = order.Text.Split(' ');
             var command = commands[1] ?? string.Empty;
+            var card = commands[2] ?? string.Empty;
 
             Team team = null;
             if (string.IsNullOrEmpty(command))
@@ -90,39 +91,43 @@ namespace unobot_main
                 team = await Team.Load(this._context, order.TeamId, order.ChannelId);
             }
 
+            // handle a create command first because logic is different
+            if (command == "create")
+            {
+                if (team == null)
+                {
+                    team = new Team(order.TeamId, order.ChannelId);
+                }
+                else
+                {
+                    if (!team.IsGameInProgress())
+                    {
+                        team.CurrentGame = new Game();
+                    }
+                    else
+                    {
+                        response.Body = "Game already in progress!";
+                    }
+                }
+
+                team.Save(this._context);
+                response.Body = "Game created! Waiting for players to join...";
+                return response;
+            }
+
+            // apply general game checks
+            if (team == null || !team.IsGameInProgress())
+            {
+                response.Body = "No game in progress. Create a game first.";
+                return response;
+            }
+
             switch (command)
             {
                 case "debug":
                     response.Body = this.CreateDebugBody(order);
                     break;
-
-                case "create":
-                    if (team == null)
-                    {
-                        team = new Team(order.TeamId, order.ChannelId);
-                    }
-                    else
-                    {
-                        if (team.CurrentGame == null)
-                        {
-                            team.CurrentGame = new Game();
-                        }
-                        else
-                        {
-                            response.Body = "Game already in progress!";
-                        }
-                    }
-
-                    team.Save(this._context);
-                    response.Body = "Game created! Waiting for players to join...";
-                    break;
                 case "join":
-                    if (team == null)
-                    {
-                        response.Body = "No game in progress. Create a game first.";
-                        break;
-                    }
-                    
                     var player = new Player
                     {
                         Id = order.UserId,
@@ -135,6 +140,22 @@ namespace unobot_main
                     }
 
                     team.Save(this._context);
+                    break;
+                case "start":
+                    team.CurrentGame.Start();
+
+                    // need to spawn responses to each player with their hands
+                    break;
+                case "play":
+                    response.Body = team.CurrentGame.Play(card);
+
+                    // need to spawn reponse to affected players with their current hands
+                    // need to understand if something like d2 that multiple players will be messaged with their hands
+                    break;
+                case "pass":
+                    team.CurrentGame.Pass();
+
+                    // need to spawn reponse to player with current hand
                     break;
             }
 

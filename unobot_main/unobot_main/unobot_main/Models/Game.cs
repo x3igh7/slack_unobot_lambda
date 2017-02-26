@@ -60,26 +60,36 @@ namespace unobot_main.Models
         }
 
         // TODO: Many of these pulic methods need to return messages to the user. Not sure what we want that to look like now
-        public void Play(string input)
+        /// <summary>
+        /// User plays a card.
+        /// </summary>
+        /// <param name="input">The card the user is attempting to play.</param>
+        /// <returns>A message with the top card on the discard.</returns>
+        public string Play(string input)
         {
+            // need to catch expection here and return a message about invalid card.
             var card = Card.Create(input);
             var action = new Action(this);
 
-            action.TakeAction(card);
+            var result = action.TakeAction(card);
 
             if (this.IsUno())
             {
                 // return uno message
+                result = $"UNO!!! {result}";
             }
 
             if (this.IsVictory())
             {
                 // return is victory
                 this.Status = GameStatus.Completed;
+                result =  $"{this.Players[this.Turn.PreviousValue].Name} won!";
             }
 
             // update the last action.
             this.LastAction = DateTime.Now;
+
+            return result;
         }
 
         public void RecycleDiscard()
@@ -97,7 +107,7 @@ namespace unobot_main.Models
             this.CreateDiscard();
 
             // should return the results. 
-            //if wild, should return what color is in play
+            // if wild, should return what color is in play
         }
 
         private void CreateDiscard()
