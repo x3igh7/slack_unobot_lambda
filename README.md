@@ -7,4 +7,4 @@ How to play:
   * create
   * join
   * start
-  * play <card>
+  * play _card_name_
