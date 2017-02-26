@@ -7,4 +7,4 @@ How to play:
   * create
   * join
   * start
-  * play _card_name_
+  * play _card_name_ (example: "Unbobot: play r1")
