@@ -8557,7 +8557,7 @@
       "Machine.Specifications >= 0.11.0",
       "Microsoft.NETCore.App >= 1.0.0",
       "dotnet-test-xunit >= 2.2.0-*",
-      "unobot_main >= 1.0.0",
+      "unobot_main >= 1.0.0-*",
       "xunit >= 2.1.0-*"
     ],
     ".NETCoreApp,Version=v1.0": []

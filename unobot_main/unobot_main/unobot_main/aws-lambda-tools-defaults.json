@@ -6,7 +6,7 @@
         "dotnet lambda help",
         "All the command line options for the Lambda command can be specified in this file."
     ],
-    "profile"     : "default",
+    "profile"     : "kmerecido@ConnerAWS",
     "region"      : "us-east-1",
     "configuration" : "Release",
     "framework"     : "netcoreapp1.0",
@@ -16,5 +16,5 @@
     "function-handler"     : "unobot_main::unobot_main.Main::MainHandler",
     "function-name"        : "unobot_main",
     "function-role"        : "arn:aws:iam::045398844840:role/lambda_exec_unobot_main",
-    "environment-variables" : ""
+    "environment-variables" : "\"incomingWebhookUrl\"=\"https://hooks.slack.com/services/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\""
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
@@ -18,11 +19,17 @@ namespace unobot_main
 {
     public class Main
     {
-        private readonly string _incomingWebHookUrl = "localhost";
-        private readonly string _userName = "UnoBot";
+        private readonly string _incomingWebHookUrl;
         private string _body;
-        private AmazonDynamoDBClient _client;
-        private DynamoDBContext _context;
+        private readonly AmazonDynamoDBClient _client;
+        private readonly DynamoDBContext _context;
+
+        public Main()
+        {
+            this._client = new AmazonDynamoDBClient();
+            this._context = new DynamoDBContext(this._client);
+            this._incomingWebHookUrl = Environment.GetEnvironmentVariable("incomingWebhookUrl");
+        }
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -31,9 +38,6 @@ namespace unobot_main
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> MainHandler(APIGatewayProxyRequest input, ILambdaContext context)
         {
-            this._client = new AmazonDynamoDBClient();
-            this._context = new DynamoDBContext(this._client);
-
             var message = this.MapToSlackMessage(input.Body);
 
             var response = await this.Delagator(message);
@@ -90,6 +94,7 @@ namespace unobot_main
                 team = await Team.Load(this._context, order.TeamId, order.ChannelId);
             }
 
+            Console.WriteLine($"command: {command}");
             switch (command)
             {
                 case "debug":
@@ -136,9 +141,33 @@ namespace unobot_main
 
                     team.Save(this._context);
                     break;
+
+                case "private":
+                    const string message = "this is sending a private message";
+                    await SendUserMessage(order.Username, message).ConfigureAwait(false);
+
+                    response.Body = $"sending a private message to you {order.Username}.";
+
+                    break;
             }
 
             return response;
+        }
+
+        private async Task SendUserMessage(string user, string message)
+        {
+            var payload = new ResponsePayload()
+            {
+                Channel = $"@{user}",
+                Username = "UnoBot",
+                Text = message
+            };
+
+            Console.WriteLine($"user {payload.Username} with message {payload.Text} to webhook url: {_incomingWebHookUrl}");
+            using (var client = new HttpClient())
+            {
+                await client.PostAsync(_incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
+            }
         }
     }
 }
