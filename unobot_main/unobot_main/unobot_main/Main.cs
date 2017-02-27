@@ -1,7 +1,10 @@
-using System.Net.Http;
+using System;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using unobot_main.Models;
 using unobot_main.SlackApi;
@@ -15,9 +18,11 @@ namespace unobot_main
 {
     public class Main
     {
+        private readonly string _incomingWebHookUrl = "localhost";
+        private readonly string _userName = "UnoBot";
         private string _body;
-        private string _userName = "UnoBot";
-        private string _incomingWebHookUrl = "localhost";
+        private AmazonDynamoDBClient _client;
+        private DynamoDBContext _context;
 
         /// <summary>
         ///     A simple function that takes a string and does a ToUpper
@@ -26,6 +31,9 @@ namespace unobot_main
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> MainHandler(APIGatewayProxyRequest input, ILambdaContext context)
         {
+            this._client = new AmazonDynamoDBClient();
+            this._context = new DynamoDBContext(this._client);
+
             var message = this.MapToSlackMessage(input.Body);
 
             var response = await this.Delagator(message);
@@ -36,7 +44,7 @@ namespace unobot_main
         public OutgoingWebookMessage MapToSlackMessage(string body)
         {
             this._body = body;
-            var order = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(this._body);
+            var order = QueryHelpers.ParseQuery(this._body);
 
             var slackMessage = new OutgoingWebookMessage
             {
@@ -55,9 +63,18 @@ namespace unobot_main
             return slackMessage;
         }
 
+        private string CreateDebugBody(SlackMessage order)
+        {
+            var payload = new ResponsePayload
+            {
+                Text = JsonConvert.SerializeObject(this._body)
+            };
+
+            return JsonConvert.SerializeObject(payload);
+        }
+
         private async Task<APIGatewayProxyResponse> Delagator(OutgoingWebookMessage order)
         {
-
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = 200,
@@ -65,59 +82,84 @@ namespace unobot_main
             };
 
             var commands = order.Text.Split(' ');
-            var command = commands[0] ?? string.Empty;
+            var command = commands[1] ?? string.Empty;
+            var card = commands[2] ?? string.Empty;
+
+            Team team = null;
+            if (string.IsNullOrEmpty(command))
+            {
+                team = await Team.Load(this._context, order.TeamId, order.ChannelId);
+            }
+
+            // handle a create command first because logic is different
+            if (command == "create")
+            {
+                if (team == null)
+                {
+                    team = new Team(order.TeamId, order.ChannelId);
+                }
+                else
+                {
+                    if (!team.IsGameInProgress())
+                    {
+                        team.CurrentGame = new Game();
+                    }
+                    else
+                    {
+                        response.Body = "Game already in progress!";
+                    }
+                }
+
+                team.Save(this._context);
+                response.Body = "Game created! Waiting for players to join...";
+                return response;
+            }
+
+            // apply general game checks
+            if (team == null || !team.IsGameInProgress())
+            {
+                response.Body = "No game in progress. Create a game first.";
+                return response;
+            }
 
             switch (command)
             {
-
                 case "debug":
                     response.Body = this.CreateDebugBody(order);
                     break;
+                case "join":
+                    var player = new Player
+                    {
+                        Id = order.UserId,
+                        Name = order.Username
+                    };
 
-                case "create":
-                    response.Body = await this.CreateDeck(order);
+                    if (team.CurrentGame.AddPlayer(player))
+                    {
+                        response.Body = $"{player.Name} joined the game! There are now {team.CurrentGame.Players.Count} / 4 players";
+                    }
+
+                    team.Save(this._context);
                     break;
+                case "start":
+                    team.CurrentGame.Start();
 
+                    // need to spawn responses to each player with their hands
+                    break;
+                case "play":
+                    response.Body = team.CurrentGame.Play(card);
+
+                    // need to spawn reponse to affected players with their current hands
+                    // need to understand if something like d2 that multiple players will be messaged with their hands
+                    break;
+                case "pass":
+                    team.CurrentGame.Pass();
+
+                    // need to spawn reponse to player with current hand
+                    break;
             }
 
             return response;
-        }
-
-        public async Task<string> CreateDeck(OutgoingWebookMessage message)
-        {
-
-            //var deck = new Deck();
-            //deck.New();
-            var payload = new Payload
-            {
-                Channel = message.ChannelId,
-                Username = this._userName,
-                Text = JsonConvert.SerializeObject("payload")
-            };
-
-            if (message.TriggerWord.Equals("debug"))
-            {
-                return JsonConvert.SerializeObject(payload);
-            }
-
-            using (var client = new HttpClient())
-            {
-                await client.PostAsync(this._incomingWebHookUrl, new StringContent(JsonConvert.SerializeObject(payload)));
-            }
-
-            return "working on it..";
-        }
-
-        private string CreateDebugBody(SlackMessage order)
-        {
-            var payload = new Payload
-            {
-                Channel = order.ChannelId,
-                Username = this._userName,
-                Text = JsonConvert.SerializeObject(this._body)
-            };
-
-            return JsonConvert.SerializeObject(payload);
         }
     }
 }

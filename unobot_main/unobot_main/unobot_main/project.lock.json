@@ -76,7 +76,7 @@
           "lib/netstandard1.3/AWSSDK.CloudFormation.dll": {}
         }
       },
-      "AWSSDK.Core/3.3.5": {
+      "AWSSDK.Core/3.3.8": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.0.1",
@@ -106,6 +106,18 @@
         },
         "runtime": {
           "lib/netstandard1.3/AWSSDK.Core.dll": {}
+        }
+      },
+      "AWSSDK.DynamoDBv2/3.3.2.1": {
+        "type": "package",
+        "dependencies": {
+          "AWSSDK.Core": "[3.3.8, 3.4.0)"
+        },
+        "compile": {
+          "lib/netstandard1.3/AWSSDK.DynamoDBv2.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/AWSSDK.DynamoDBv2.dll": {}
         }
       },
       "AWSSDK.IdentityManagement/3.3.0.3": {
@@ -2672,12 +2684,12 @@
         "tools/uninstall.ps1"
       ]
     },
-    "AWSSDK.Core/3.3.5": {
-      "sha512": "VM0TnLNd0BU1/Jd45Woc5MI3LVeXII8eG0870TR62YDoJ8dpaBGHQ87px25fe2FzQ64AKLa9LGKY8O0bYbk/mw==",
+    "AWSSDK.Core/3.3.8": {
+      "sha512": "sDEABDAYvdjkXk9bNHzMbxmN+ubpr8YhaKlZgAhNs5N8dptVKaFTvPq9dK3/bDHxDGYJGSJcNFJ9FobUh/tsWg==",
       "type": "package",
-      "path": "AWSSDK.Core/3.3.5",
+      "path": "AWSSDK.Core/3.3.8",
       "files": [
-        "AWSSDK.Core.3.3.5.nupkg.sha512",
+        "AWSSDK.Core.3.3.8.nupkg.sha512",
         "AWSSDK.Core.nuspec",
         "lib/MonoAndroid10/AWSSDK.Core.XML",
         "lib/MonoAndroid10/AWSSDK.Core.dll",
@@ -2713,6 +2725,37 @@
         "lib/wpa81/AWSSDK.Core.dll",
         "lib/wpa81/AWSSDK.Core.pdb",
         "tools/account-management.ps1"
+      ]
+    },
+    "AWSSDK.DynamoDBv2/3.3.2.1": {
+      "sha512": "04NpNiPmxs4nbXdtVgTahq3tz3vEg0WdURn6+doVZwgg2q4e8h9NrmK8DnS1Lre+LaFb3ZBB7EQuTQ3KppXWFA==",
+      "type": "package",
+      "path": "AWSSDK.DynamoDBv2/3.3.2.1",
+      "files": [
+        "AWSSDK.DynamoDBv2.3.3.2.1.nupkg.sha512",
+        "AWSSDK.DynamoDBv2.nuspec",
+        "analyzers/dotnet/cs/AWSSDK.DynamoDBv2.CodeAnalysis.dll",
+        "lib/MonoAndroid10/AWSSDK.DynamoDBv2.XML",
+        "lib/MonoAndroid10/AWSSDK.DynamoDBv2.dll",
+        "lib/MonoTouch10/AWSSDK.DynamoDBv2.XML",
+        "lib/MonoTouch10/AWSSDK.DynamoDBv2.dll",
+        "lib/MonoTouch10/AWSSDK.DynamoDBv2.pdb",
+        "lib/Xamarin.iOS10/AWSSDK.DynamoDBv2.XML",
+        "lib/Xamarin.iOS10/AWSSDK.DynamoDBv2.dll",
+        "lib/net35/AWSSDK.DynamoDBv2.XML",
+        "lib/net35/AWSSDK.DynamoDBv2.dll",
+        "lib/net35/AWSSDK.DynamoDBv2.pdb",
+        "lib/net45/AWSSDK.DynamoDBv2.XML",
+        "lib/net45/AWSSDK.DynamoDBv2.dll",
+        "lib/net45/AWSSDK.DynamoDBv2.pdb",
+        "lib/netstandard1.3/AWSSDK.DynamoDBv2.dll",
+        "lib/netstandard1.3/AWSSDK.DynamoDBv2.pdb",
+        "lib/netstandard1.3/AWSSDK.DynamoDBv2.xml",
+        "lib/portable-net45+win8+wpa81+wp8/AWSSDK.DynamoDBv2.XML",
+        "lib/portable-net45+win8+wpa81+wp8/AWSSDK.DynamoDBv2.dll",
+        "lib/portable-net45+win8+wpa81+wp8/AWSSDK.DynamoDBv2.pdb",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
       ]
     },
     "AWSSDK.IdentityManagement/3.3.0.3": {
@@ -7845,6 +7888,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "AWSSDK.DynamoDBv2 >= 3.3.2.1",
       "Amazon.Lambda.APIGatewayEvents >= 1.0.2",
       "Amazon.Lambda.Core >= 1.0.*",
       "Amazon.Lambda.Serialization.Json >= 1.0.1",

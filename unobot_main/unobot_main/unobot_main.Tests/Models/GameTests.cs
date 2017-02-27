@@ -79,12 +79,13 @@ namespace unobot_main.Tests.Models
         public void RecycleDiscardTest()
         {
             var game = GameFactory.InProgress();
-            var discardCount = game.Discard.Count;
+            // will remove 1 card from the discard and keep it on top
+            var discardCount = game.Discard.Count - 1;
 
             game.RecycleDiscard();
 
             Assert.True(discardCount == game.Deck.Cards.Count);
-            Assert.True(game.Discard.Count == 0);
+            Assert.True(game.Discard.Count == 1);
         }
 
         [Fact]

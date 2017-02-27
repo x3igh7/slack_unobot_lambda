@@ -18,14 +18,15 @@ namespace unobot_main.Models
             return this.Game.Hands.Single(x => x.Player == player);
         }
 
-        public void TakeAction(Card card)
+        public string TakeAction(Card card)
         {
             var hand = this.GetHand(this.Game.Turn.Value);
 
             if (!this.IsValidPlay(hand, card))
             {
                 // TODO: return some type of error message object to return to the user
-                return;
+                // Should standardize this.
+                return "Not a valid play.";
             }
 
             this.Game.CurrentColor = card.Color == Color.Wild ? card.NewColor : card.Color;
@@ -37,6 +38,7 @@ namespace unobot_main.Models
             }
 
             this.Game.Discard.Push(this.RemoveCardFromHand(hand, card));
+            return $"Top card is: {this.Game.Discard.Peek().Display}";
         }
 
         public void Pass()
