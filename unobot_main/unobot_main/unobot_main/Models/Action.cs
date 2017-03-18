@@ -18,6 +18,13 @@ namespace unobot_main.Models
             return this.Game.Hands.Single(x => x.Player == player);
         }
 
+        public void Pass()
+        {
+            var hand = this.GetHand(this.Game.Turn.Value);
+            hand.Cards.Add(this.Game.Deck.Draw());
+            this.Game.Turn.ProgressTurn();
+        }
+
         public string TakeAction(Card card)
         {
             var hand = this.GetHand(this.Game.Turn.Value);
@@ -39,13 +46,6 @@ namespace unobot_main.Models
 
             this.Game.Discard.Push(this.RemoveCardFromHand(hand, card));
             return $"Top card is: {this.Game.Discard.Peek().Display}";
-        }
-
-        public void Pass()
-        {
-            var hand = this.GetHand(this.Game.Turn.Value);
-            hand.Cards.Add(this.Game.Deck.Draw());
-            this.Game.Turn.ProgressTurn();
         }
 
         private bool CardIsInHand(Hand hand, Card card)
@@ -112,7 +112,8 @@ namespace unobot_main.Models
 
                 // if playing d4, you can't have another valid play.
                 var haveCurrentColor = hand.Cards.Any(c => c.Color == this.Game.CurrentColor);
-                var haveCurrentValue = hand.Cards.Any(c => c.Value == this.Game.CurrentValue) && this.Game.CurrentValue != "d4";
+                var haveCurrentValue = hand.Cards.Any(c => c.Value == this.Game.CurrentValue) &&
+                                       this.Game.CurrentValue != "d4";
 
                 return !haveCurrentValue && !haveCurrentColor;
             }
